@@ -61,7 +61,7 @@ export function BookingModal() {
       const data = await getActiveServices();
       // Fallback to mock list if database has no active services
       if (data && data.length > 0) {
-        setServices(data.map(s => ({ id: s.id, name: s.name })));
+        setServices(data.map((s: any) => ({ id: s.id, name: s.name })));
       } else {
         setServices([
           { id: "SRV-101", name: "Beginner Yoga" },

@@ -485,7 +485,7 @@ export default function TestimonialsManagementPage() {
           <div className="space-y-1">
             <h3 className="text-base font-bold text-foreground font-sans">No Testimonials Found</h3>
             <p className="text-xs text-muted-foreground max-w-sm mx-auto font-sans leading-relaxed">
-              We couldn't find any student reviews matching your filters. Try clearing your filters or search keywords.
+              We couldn&apos;t find any student reviews matching your filters. Try clearing your filters or search keywords.
             </p>
           </div>
           <Button
@@ -697,7 +697,7 @@ export default function TestimonialsManagementPage() {
                   </div>
 
                   <p className="text-xs text-muted-foreground leading-normal font-sans italic">
-                    "{t.reviewText}"
+                    &quot;{t.reviewText}&quot;
                   </p>
 
                   <div className="flex justify-between items-center text-[10px] text-muted-foreground font-sans border-t border-border/40 pt-3">
@@ -995,7 +995,7 @@ export default function TestimonialsManagementPage() {
 
                   {/* Main text */}
                   <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed italic font-sans font-medium">
-                    "{previewTarget.reviewText}"
+                    &quot;{previewTarget.reviewText}&quot;
                   </p>
 
                 </div>
@@ -1044,7 +1044,7 @@ export default function TestimonialsManagementPage() {
 
                 <div className="space-y-1">
                   <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Review Content</p>
-                  <p className="text-xs text-foreground leading-normal mt-0.5">"{viewTarget.reviewText}"</p>
+                  <p className="text-xs text-foreground leading-normal mt-0.5">&quot;{viewTarget.reviewText}&quot;</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 border-t border-border pt-4 text-xs font-sans">

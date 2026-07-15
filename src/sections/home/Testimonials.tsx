@@ -9,6 +9,7 @@ import { Section } from "@/components/ui/section";
 import { Heading } from "@/components/ui/heading";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { triggerBookingModal } from "@/components/booking/BookingModal";
 
 export function Testimonials() {
   const shouldReduceMotion = useReducedMotion();
@@ -212,7 +213,7 @@ export function Testimonials() {
                           </div>
                         </div>
                         <p className="text-muted-foreground text-sm sm:text-base leading-relaxed italic font-sans">
-                          "{featuredList[activeIdx].text}"
+                          &quot;{featuredList[activeIdx].text}&quot;
                         </p>
                       </div>
                     </CardContent>
@@ -279,7 +280,7 @@ export function Testimonials() {
                       </div>
                     </div>
                     <p className="text-xs sm:text-sm text-muted-foreground italic leading-relaxed font-sans">
-                      "{review.text}"
+                      &quot;{review.text}&quot;
                     </p>
                   </CardContent>
                 </Card>
@@ -305,11 +306,9 @@ export function Testimonials() {
                   Book your first yoga session today and begin your transformation.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2">
-                  <Link href="/contact">
-                    <Button variant="default" className="w-full sm:w-auto">
-                      Book Free Trial
-                    </Button>
-                  </Link>
+                  <Button variant="default" className="w-full sm:w-auto" onClick={triggerBookingModal}>
+                    Book Free Trial
+                  </Button>
                   <Link href="/contact">
                     <Button variant="outline" className="w-full sm:w-auto">
                       Contact Us

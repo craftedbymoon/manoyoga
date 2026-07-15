@@ -28,6 +28,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
+import { getBookings, deleteBooking, updateBookingStatus } from "@/lib/actions/booking";
 
 interface Booking {
   id: string;
@@ -59,30 +60,35 @@ export default function BookingManagementPage() {
   const [deleteTarget, setDeleteTarget] = React.useState<Booking | null>(null);
   const [viewTarget, setViewTarget] = React.useState<Booking | null>(null);
 
-  // Load Mock Data
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      const mockData: Booking[] = [
-        { id: "BKG-1001", name: "Shivani Sharma", email: "shivani@gmail.com", phone: "+91 98765 43210", program: "Beginner Yoga", date: "2026-07-15", time: "07:00 AM", status: "Confirmed", paymentStatus: "Paid" },
-        { id: "BKG-1002", name: "Aarav Gupta", email: "aarav@yahoo.com", phone: "+91 98123 45678", program: "Meditation & Breathing", date: "2026-07-16", time: "06:00 PM", status: "Pending", paymentStatus: "Pending" },
-        { id: "BKG-1003", name: "Diya Patel", email: "diya@outlook.com", phone: "+91 95432 10987", program: "Private Wellness", date: "2026-07-17", time: "10:00 AM", status: "Confirmed", paymentStatus: "Paid" },
-        { id: "BKG-1004", name: "Kabir Mehta", email: "kabir@gmail.com", phone: "+91 91234 56789", program: "Power Yoga Core", date: "2026-07-18", time: "05:30 PM", status: "Cancelled", paymentStatus: "Refunded" },
-        { id: "BKG-1005", name: "Ishaan Malhotra", email: "ishaan@gmail.com", phone: "+91 88776 65544", program: "Corporate Mindfulness", date: "2026-07-19", time: "11:00 AM", status: "Pending", paymentStatus: "Pending" },
-        { id: "BKG-1006", name: "Meera Nair", email: "meera@gmail.com", phone: "+91 77665 54433", program: "Beginner Yoga", date: "2026-07-15", time: "08:30 AM", status: "Completed", paymentStatus: "Paid" },
-        { id: "BKG-1007", name: "Rohan Sen", email: "rohan@gmail.com", phone: "+91 66554 43322", program: "Power Yoga Core", date: "2026-07-15", time: "07:00 PM", status: "Confirmed", paymentStatus: "Paid" },
-        { id: "BKG-1008", name: "Aditya Roy", email: "aditya@gmail.com", phone: "+91 99887 76655", program: "Meditation & Breathing", date: "2026-07-20", time: "06:00 PM", status: "Confirmed", paymentStatus: "Paid" },
-        { id: "BKG-1009", name: "Kirti Verma", email: "kirti@gmail.com", phone: "+91 88990 11223", program: "Private Wellness", date: "2026-07-21", time: "09:00 AM", status: "Pending", paymentStatus: "Pending" },
-        { id: "BKG-1010", name: "Devansh Gill", email: "devansh@gmail.com", phone: "+91 77889 90011", program: "Beginner Yoga", date: "2026-07-22", time: "07:00 AM", status: "Confirmed", paymentStatus: "Paid" },
-        { id: "BKG-1011", name: "Ananya Kapoor", email: "ananya@gmail.com", phone: "+91 90011 22334", program: "Corporate Mindfulness", date: "2026-07-23", time: "02:00 PM", status: "Confirmed", paymentStatus: "Paid" },
-        { id: "BKG-1012", name: "Tanishq Sood", email: "tanishq@gmail.com", phone: "+91 91122 33445", program: "Power Yoga Core", date: "2026-07-24", time: "05:30 PM", status: "Cancelled", paymentStatus: "Pending" },
-        { id: "BKG-1013", name: "Sneha Reddy", email: "sneha@gmail.com", phone: "+91 92233 44556", program: "Beginner Yoga", date: "2026-07-25", time: "07:00 AM", status: "Pending", paymentStatus: "Pending" },
-        { id: "BKG-1014", name: "Varun Malhotra", email: "varun@gmail.com", phone: "+91 93344 55667", program: "Meditation & Breathing", date: "2026-07-26", time: "06:00 PM", status: "Confirmed", paymentStatus: "Paid" },
-        { id: "BKG-1015", name: "Rhea Sen", email: "rhea@gmail.com", phone: "+91 94455 66778", program: "Private Wellness", date: "2026-07-27", time: "04:30 PM", status: "Completed", paymentStatus: "Paid" }
-      ];
-      setBookings(mockData);
+  const fetchBookings = async () => {
+    setIsLoading(true);
+    try {
+      const data = await getBookings();
+      if (data) {
+        const mapped: Booking[] = data.map((b: any) => ({
+          id: b.id,
+          name: b.name,
+          email: b.email,
+          phone: b.phone,
+          program: b.service?.name || "Yoga Session",
+          date: b.date,
+          time: b.time,
+          status: b.status as any,
+          paymentStatus: b.paymentStatus as any,
+          mode: b.mode,
+          message: b.message || ""
+        }));
+        setBookings(mapped);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
       setIsLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchBookings();
   }, []);
 
   // Filter Actions
@@ -117,10 +123,19 @@ export default function BookingManagementPage() {
     { label: "Cancelled Sessions", value: cancelledCount, change: "Refunded matches", trend: "down", icon: XCircle, desc: "Closed booking slots" }
   ];
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (deleteTarget) {
-      setBookings((prev) => prev.filter((b) => b.id !== deleteTarget.id));
-      setDeleteTarget(null);
+      try {
+        const res = await deleteBooking(deleteTarget.id);
+        if (res.success) {
+          setBookings((prev) => prev.filter((b) => b.id !== deleteTarget.id));
+          setDeleteTarget(null);
+        } else {
+          alert("Failed to delete booking.");
+        }
+      } catch (err) {
+        alert("Delete failed due to authorization issues.");
+      }
     }
   };
 
@@ -666,9 +681,29 @@ export default function BookingManagementPage() {
                     </div>
                     <div>
                       <p className="text-[10px] text-muted-foreground font-sans">Confirmation</p>
-                      <span className="inline-block text-[10px] font-bold text-emerald-600 mt-1">
-                        {viewTarget.status}
-                      </span>
+                      <select
+                        value={viewTarget.status}
+                        onChange={async (e) => {
+                          const newStatus = e.target.value as any;
+                          try {
+                            const res = await updateBookingStatus(viewTarget.id, newStatus);
+                            if (res.success) {
+                              setViewTarget({ ...viewTarget, status: newStatus });
+                              fetchBookings();
+                            } else {
+                              alert("Failed to update status.");
+                            }
+                          } catch (err) {
+                            alert("Authorization failed for updating status.");
+                          }
+                        }}
+                        className="text-[10px] font-bold border border-border bg-background rounded p-1 text-foreground cursor-pointer font-sans mt-0.5"
+                      >
+                        <option value="Pending">Pending</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                      </select>
                     </div>
                   </div>
                 </div>

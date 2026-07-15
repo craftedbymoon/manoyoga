@@ -354,6 +354,7 @@ export default function ServicesManagementPage() {
   const handleDuplicate = (service: Service) => {
     const duplicated: Service = {
       ...service,
+      // eslint-disable-next-line react-hooks/purity
       id: `SRV-${Date.now().toString().slice(-3)}`,
       name: `${service.name} (Copy)`,
       slug: `${service.slug}-copy`,
@@ -595,7 +596,7 @@ export default function ServicesManagementPage() {
           <div className="space-y-1">
             <h3 className="text-base font-bold text-foreground font-sans">No Services Found</h3>
             <p className="text-xs text-muted-foreground max-w-sm mx-auto font-sans leading-relaxed">
-              We couldn't find any yoga programs matching your filters. Try clearing your filters or search keywords.
+              We couldn&apos;t find any yoga programs matching your filters. Try clearing your filters or search keywords.
             </p>
           </div>
           <Button

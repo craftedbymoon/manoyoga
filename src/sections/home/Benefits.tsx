@@ -9,6 +9,7 @@ import { Section } from "@/components/ui/section";
 import { Heading } from "@/components/ui/heading";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { triggerBookingModal } from "@/components/booking/BookingModal";
 
 export function Benefits() {
   const shouldReduceMotion = useReducedMotion();
@@ -114,7 +115,7 @@ export function Benefits() {
               Discover the Benefits of a Healthier Lifestyle
             </Heading>
             <p className="text-muted-foreground text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl mx-auto font-sans">
-              Yoga is more than movement—it's a holistic practice that nurtures your body, mind, and soul. Experience lasting wellness through consistent practice at ManoYoga.
+              Yoga is more than movement—it&apos;s a holistic practice that nurtures your body, mind, and soul. Experience lasting wellness through consistent practice at ManoYoga.
             </p>
           </motion.div>
 
@@ -172,11 +173,9 @@ export function Benefits() {
                   Join ManoYoga and discover how small daily practices can transform your life.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2">
-                  <Link href="/contact">
-                    <Button variant="default" className="w-full sm:w-auto">
-                      Book Free Trial
-                    </Button>
-                  </Link>
+                  <Button variant="default" className="w-full sm:w-auto" onClick={triggerBookingModal}>
+                    Book Free Trial
+                  </Button>
                   <Link href="/services">
                     <Button variant="outline" className="w-full sm:w-auto">
                       View Programs

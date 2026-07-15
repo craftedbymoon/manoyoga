@@ -9,6 +9,7 @@ import { Section } from "@/components/ui/section";
 import { Heading } from "@/components/ui/heading";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { triggerBookingModal } from "@/components/booking/BookingModal";
 
 export function ContactCTA() {
   const shouldReduceMotion = useReducedMotion();
@@ -66,17 +67,15 @@ export function ContactCTA() {
                     Your Wellness Journey Starts Today
                   </Heading>
                   <p className="text-muted-foreground text-sm sm:text-base md:text-lg leading-relaxed font-sans max-w-xl mx-auto">
-                    Whether you're looking to improve flexibility, reduce stress, increase strength or simply live a healthier life, Nistha at ManoYoga is here to guide you every step of the way.
+                    Whether you&apos;re looking to improve flexibility, reduce stress, increase strength or simply live a healthier life, Nistha at ManoYoga is here to guide you every step of the way.
                   </p>
                 </div>
 
                 {/* CTAs Trigger area */}
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full pt-2">
-                  <Link href="/contact" className="w-full sm:w-auto">
-                    <Button variant="default" size="lg" className="w-full sm:w-auto">
-                      Book Free Trial
-                    </Button>
-                  </Link>
+                  <Button variant="default" size="lg" className="w-full sm:w-auto" onClick={triggerBookingModal}>
+                    Book Free Trial
+                  </Button>
                   <a
                     href="https://wa.me/#"
                     target="_blank"

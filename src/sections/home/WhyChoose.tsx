@@ -10,6 +10,7 @@ import { Section } from "@/components/ui/section";
 import { Heading } from "@/components/ui/heading";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { triggerBookingModal } from "@/components/booking/BookingModal";
 
 // Reusable Counter Component
 interface CounterProps {
@@ -330,11 +331,9 @@ export function WhyChoose() {
                   Take the first step toward a healthier and happier lifestyle with ManoYoga.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2">
-                  <Link href="/contact">
-                    <Button variant="default" className="w-full sm:w-auto">
-                      Book Free Trial
-                    </Button>
-                  </Link>
+                  <Button variant="default" className="w-full sm:w-auto" onClick={triggerBookingModal}>
+                    Book Free Trial
+                  </Button>
                   <Link href="/contact">
                     <Button variant="outline" className="w-full sm:w-auto">
                       Contact Us

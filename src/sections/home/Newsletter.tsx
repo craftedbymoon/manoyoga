@@ -118,7 +118,7 @@ export function Newsletter() {
                     className="p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 rounded-xl text-sm font-semibold max-w-md mx-auto flex items-center justify-center space-x-2"
                   >
                     <Check className="h-5 w-5 shrink-0" />
-                    <span>Thank you! You've successfully subscribed to ManoYoga.</span>
+                    <span>Thank you! You&apos;ve successfully subscribed to ManoYoga.</span>
                   </motion.div>
                 )}
 

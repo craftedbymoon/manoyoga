@@ -54,6 +54,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   // Auto-close mobile drawer on route change
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMobileOpen(false);
   }, [pathname]);
 

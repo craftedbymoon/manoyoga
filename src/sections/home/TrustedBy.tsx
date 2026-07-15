@@ -169,7 +169,7 @@ export function TrustedBy() {
                     </div>
                     {/* Text */}
                     <p className="text-sm text-muted-foreground italic leading-relaxed font-sans">
-                      "{testimonial.text}"
+                      &quot;{testimonial.text}&quot;
                     </p>
                   </CardContent>
                 </Card>

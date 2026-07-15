@@ -27,6 +27,8 @@ import {
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { uploadImageAction } from "@/lib/actions/uploads";
+import { getGalleryItems, createGalleryItem, updateGalleryItem, deleteGalleryItem } from "@/lib/actions/gallery";
 
 interface GalleryItem {
   id: string;
@@ -60,147 +62,48 @@ export default function GalleryManagementPage() {
   const [isUploadOpen, setIsUploadOpen] = React.useState(false);
   const [editTarget, setEditTarget] = React.useState<GalleryItem | null>(null);
 
-  // Load Mock Data
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      const mockData: GalleryItem[] = [
-        {
-          id: "GAL-101",
-          title: "Vinyasa Flow Class Stretch",
-          altText: "Instructor Nistha guiding vinyasa postures",
-          category: "Yoga Classes",
-          description: "Morning yoga class session focusing on chest opener movements.",
-          featured: true,
-          status: "Active",
-          url: "/gallery-1.jpg",
-          fileSize: "245 KB",
-          uploadDate: "2026-07-10",
-          seoTitle: "Morning Vinyasa Flow Classes",
-          seoAlt: "Yogis practicing chest extension flow",
-          seoCaption: "Fluid alignment guide classes by Nistha."
-        },
-        {
-          id: "GAL-102",
-          title: "Deep Breathing Focus",
-          altText: "Pranayama concentration student close up",
-          category: "Meditation",
-          description: "Pranayama and deep breath meditation batch setup.",
-          featured: true,
-          status: "Active",
-          url: "/gallery-2.jpg",
-          fileSize: "190 KB",
-          uploadDate: "2026-07-12",
-          seoTitle: "Guided Breathing and Meditation Sessions",
-          seoAlt: "Student focusing on breath holds",
-          seoCaption: "Slowing down respiratory cycles in studio."
-        },
-        {
-          id: "GAL-103",
-          title: "Corporate Desk Stretch Workshop",
-          altText: "Office team practicing chair poses",
-          category: "Corporate Yoga",
-          description: "Corporate yoga break helping employees stretch shoulder segments.",
-          featured: false,
-          status: "Active",
-          url: "/gallery-3.jpg",
-          fileSize: "320 KB",
-          uploadDate: "2026-07-08",
-          seoTitle: "Office Team Workspace Stretch Programs",
-          seoAlt: "Chair stretches for spine relief",
-          seoCaption: "Releasing workspace body fatigue."
-        },
-        {
-          id: "GAL-104",
-          title: "Studio Ambient Light Setup",
-          altText: "ManoYoga studio plants and yoga blocks",
-          category: "Studio",
-          description: "Peaceful ambient light setting inside ManoYoga Studio A.",
-          featured: false,
-          status: "Active",
-          url: "/why-choose-yoga.jpg",
-          fileSize: "410 KB",
-          uploadDate: "2026-07-05",
-          seoTitle: "ManoYoga Studio Space Ambient Layout",
-          seoAlt: "Yoga blocks and warm studio layout",
-          seoCaption: "Clean props and serene floor alignment space."
-        },
-        {
-          id: "GAL-105",
-          title: "Meet the Instructors Team",
-          altText: "Nistha smiling with wellness specialists",
-          category: "Team",
-          description: "Specialist instructors gather after a weekend workshop.",
-          featured: true,
-          status: "Active",
-          url: "/about-nistha.jpg",
-          fileSize: "280 KB",
-          uploadDate: "2026-07-14",
-          seoTitle: "Certified Wellness Specialists Team",
-          seoAlt: "ManoYoga expert yoga instructors team",
-          seoCaption: "Committed guidance experts for student goals."
-        },
-        {
-          id: "GAL-106",
-          title: "Online Interactive Stream Class",
-          altText: "Laptop screen showing live stream yogis",
-          category: "Online Sessions",
-          description: "Live streamed alignment posture review batch.",
-          featured: false,
-          status: "Active",
-          url: "/gallery-1.jpg",
-          fileSize: "175 KB",
-          uploadDate: "2026-07-09",
-          seoTitle: "Online Streams - Practice Yoga Anywhere",
-          seoAlt: "Live stream classes screen view",
-          seoCaption: "Interactive remote batched postures review."
-        },
-        {
-          id: "GAL-107",
-          title: "Annual Retreat Evening Ceremony",
-          altText: "Retreat students holding lights together",
-          category: "Events",
-          description: "Evening light sharing session during wellness retreat.",
-          featured: false,
-          status: "Draft",
-          url: "/gallery-2.jpg",
-          fileSize: "380 KB",
-          uploadDate: "2026-07-01",
-          seoTitle: "Annual Retreat Outdoor Activities",
-          seoAlt: "Outdoor evening ceremony retreat",
-          seoCaption: "Deep mental release outdoors."
-        },
-        {
-          id: "GAL-108",
-          title: "Sun Salutation Sunset Workshop",
-          altText: "Outdoor sunset postures session",
-          category: "Workshops",
-          description: "Outdoor workshop practicing Surya Namaskar flow.",
-          featured: false,
-          status: "Active",
-          url: "/gallery-3.jpg",
-          fileSize: "295 KB",
-          uploadDate: "2026-07-11",
-          seoTitle: "Sun Salutation Sunset Workshops",
-          seoAlt: "Sun salutation postures against dusk",
-          seoCaption: "Fluid outdoor flow practices."
-        }
-      ];
+  const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
+  const [isUploading, setIsUploading] = React.useState(false);
+  const [uploadError, setUploadError] = React.useState<string | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
-      // Pad mock data to reach 24 items to simulate media library
-      const paddedData: GalleryItem[] = [];
-      for (let i = 0; i < 24; i++) {
-        const template = mockData[i % mockData.length];
-        paddedData.push({
-          ...template,
-          id: `GAL-${101 + i}`,
-          title: `${template.title} #${i + 1}`,
-          featured: i % 5 === 0
-        });
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setSelectedFile(e.target.files[0]);
+      setUploadError(null);
+    }
+  };
+
+  const fetchItems = async () => {
+    setIsLoading(true);
+    try {
+      const data = await getGalleryItems();
+      if (data) {
+        setItems(data.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          altText: item.altText,
+          category: item.category as any,
+          description: item.description || "",
+          featured: item.featured,
+          status: item.status as any,
+          url: item.url,
+          fileSize: item.fileSize,
+          uploadDate: new Date(item.createdAt).toISOString().split("T")[0],
+          seoTitle: item.seoTitle || "",
+          seoAlt: item.seoAlt || "",
+          seoCaption: item.seoCaption || ""
+        })));
       }
-      setItems(paddedData);
+    } catch (err) {
+      console.error(err);
+    } finally {
       setIsLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchItems();
   }, []);
 
   const initialFormState: Omit<GalleryItem, "id" | "fileSize" | "uploadDate"> = {
@@ -224,37 +127,99 @@ export default function GalleryManagementPage() {
     setFormState((prev) => ({ ...prev, [name]: val }));
   };
 
-  const handleUploadSubmit = (e: React.FormEvent) => {
+  const handleUploadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newItem: GalleryItem = {
-      ...formState,
-      id: `GAL-${Date.now().toString().slice(-3)}`,
-      fileSize: "215 KB",
-      uploadDate: new Date().toISOString().split("T")[0]
-    };
-    setItems((prev) => [newItem, ...prev]);
-    setIsUploadOpen(false);
-    setFormState(initialFormState);
+    if (!selectedFile) {
+      setUploadError("Please select a file to upload.");
+      return;
+    }
+
+    setIsUploading(true);
+    setUploadError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      const res = await uploadImageAction(formData);
+      if (!res.success) {
+        setUploadError(res.error || "Failed to upload to Cloudinary.");
+        setIsUploading(false);
+        return;
+      }
+
+      const sizeStr = `${(selectedFile.size / 1024).toFixed(0)} KB`;
+      const saveRes = await createGalleryItem({
+        title: formState.title,
+        altText: formState.altText,
+        category: formState.category,
+        description: formState.description,
+        url: res.url || "/gallery-1.jpg",
+        fileSize: sizeStr,
+        seoTitle: formState.seoTitle,
+        seoAlt: formState.seoAlt,
+        seoCaption: formState.seoCaption,
+        featured: formState.featured,
+        status: formState.status
+      });
+
+      if (saveRes.success) {
+        setIsUploadOpen(false);
+        setSelectedFile(null);
+        setFormState(initialFormState);
+        fetchItems();
+      } else {
+        setUploadError(saveRes.error || "Failed to save record.");
+      }
+    } catch (err: any) {
+      setUploadError(err.message || "An unexpected error occurred.");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
-  const handleEditSubmit = (e: React.FormEvent) => {
+  const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editTarget) return;
-    setItems((prev) =>
-      prev.map((it) =>
-        it.id === editTarget.id
-          ? { ...it, ...formState }
-          : it
-      )
-    );
-    setEditTarget(null);
-    setFormState(initialFormState);
+
+    try {
+      const res = await updateGalleryItem(editTarget.id, {
+        title: formState.title,
+        altText: formState.altText,
+        category: formState.category,
+        description: formState.description,
+        featured: formState.featured,
+        status: formState.status,
+        seoTitle: formState.seoTitle,
+        seoAlt: formState.seoAlt,
+        seoCaption: formState.seoCaption
+      });
+
+      if (res.success) {
+        setEditTarget(null);
+        setFormState(initialFormState);
+        fetchItems();
+      } else {
+        alert(res.error || "Failed to update item.");
+      }
+    } catch (err: any) {
+      alert(err.message || "Edit failed.");
+    }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (deleteTarget) {
-      setItems((prev) => prev.filter((it) => it.id !== deleteTarget.id));
-      setDeleteTarget(null);
+      try {
+        const res = await deleteGalleryItem(deleteTarget.id);
+        if (res.success) {
+          setItems((prev) => prev.filter((it) => it.id !== deleteTarget.id));
+          setDeleteTarget(null);
+        } else {
+          alert(res.error || "Failed to delete item.");
+        }
+      } catch (err: any) {
+        alert(err.message || "Delete failed.");
+      }
     }
   };
 
@@ -675,11 +640,34 @@ export default function GalleryManagementPage() {
               </div>
               <form onSubmit={handleUploadSubmit} className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
                 
+                {uploadError && (
+                  <div className="p-3 bg-rose-500/10 text-rose-600 rounded-lg flex items-start space-x-2 text-xs font-semibold">
+                    <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                    <span>{uploadError}</span>
+                  </div>
+                )}
+
                 {/* Upload Placeholder Section */}
-                <div className="border-2 border-dashed border-border rounded-xl p-6 text-center space-y-2 bg-primary/5 cursor-pointer hover:bg-primary/10 transition-colors">
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border-2 border-dashed border-border rounded-xl p-6 text-center space-y-2 bg-primary/5 cursor-pointer hover:bg-primary/10 transition-colors relative"
+                >
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="hidden"
+                    accept=".jpg,.jpeg,.png,.webp"
+                  />
                   <Upload className="h-8 w-8 text-muted-foreground/80 mx-auto" />
-                  <p className="text-xs font-bold text-foreground">Drag and drop images here, or click to browse</p>
-                  <p className="text-[10px] text-muted-foreground/60">Supports PNG, JPG, WebP up to 5MB</p>
+                  <p className="text-xs font-bold text-foreground">
+                    {selectedFile ? selectedFile.name : "Drag and drop images here, or click to browse"}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground/60">
+                    {selectedFile
+                      ? `${(selectedFile.size / 1024).toFixed(0)} KB - click to change`
+                      : "Supports PNG, JPG, WebP up to 5MB"}
+                  </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -726,8 +714,10 @@ export default function GalleryManagementPage() {
                 </div>
 
                 <div className="flex justify-end space-x-3.5 pt-4 border-t border-border">
-                  <Button variant="outline" size="sm" type="button" onClick={() => setIsUploadOpen(false)}>Cancel</Button>
-                  <Button variant="default" size="sm" type="submit">Submit Image</Button>
+                  <Button variant="outline" size="sm" type="button" onClick={() => setIsUploadOpen(false)} disabled={isUploading}>Cancel</Button>
+                  <Button variant="default" size="sm" type="submit" disabled={isUploading}>
+                    {isUploading ? "Uploading..." : "Submit Image"}
+                  </Button>
                 </div>
               </form>
             </motion.div>

@@ -105,7 +105,7 @@ export function Services() {
               Yoga Programs Designed For Every Stage Of Your Wellness Journey
             </Heading>
             <p className="text-muted-foreground text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl mx-auto font-sans">
-              Whether you're just beginning your yoga journey or looking to deepen your practice, ManoYoga offers personalized programs that help improve flexibility, strength, mindfulness and overall well-being.
+              Whether you&apos;re just beginning your yoga journey or looking to deepen your practice, ManoYoga offers personalized programs that help improve flexibility, strength, mindfulness and overall well-being.
             </p>
           </motion.div>
 

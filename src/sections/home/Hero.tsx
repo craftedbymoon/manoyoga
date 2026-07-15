@@ -10,6 +10,7 @@ import { Section } from "@/components/ui/section";
 import { Heading } from "@/components/ui/heading";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { triggerBookingModal } from "@/components/booking/BookingModal";
 
 interface FloatingCardProps {
   children: React.ReactNode;
@@ -106,11 +107,9 @@ export function Hero() {
               variants={fadeIn}
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-2"
             >
-              <Link href="/contact">
-                <Button variant="default" size="lg" className="w-full sm:w-auto">
-                  Book Free Trial
-                </Button>
-              </Link>
+              <Button variant="default" size="lg" className="w-full sm:w-auto" onClick={triggerBookingModal}>
+                Book Free Trial
+              </Button>
               <Link href="/services">
                 <Button variant="outline" size="lg" className="w-full sm:w-auto">
                   Explore Programs

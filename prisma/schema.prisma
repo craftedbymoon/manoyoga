@@ -1,0 +1,165 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+  role      String   @default("SUPPORT") // ADMIN, EDITOR, SUPPORT
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  blogs     Blog[]
+}
+
+model Service {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  shortDesc   String
+  fullDesc    String
+  category    String
+  duration    String
+  level       String
+  price       Float
+  featured    Boolean   @default(false)
+  status      String    @default("Active") // Active, Draft, Archived
+  image       String    @default("/gallery-1.jpg")
+  seoTitle    String?
+  seoDesc     String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  bookings    Booking[]
+}
+
+model Booking {
+  id            String   @id @default(cuid())
+  name          String
+  email         String
+  phone         String
+  serviceId     String
+  service       Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  date          String
+  time          String
+  mode          String   @default("Online") // Online, Offline
+  message       String?
+  status        String   @default("Pending") // Pending, Confirmed, Completed, Cancelled
+  paymentStatus String   @default("Pending") // Paid, Pending, Refunded
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([serviceId])
+}
+
+model Blog {
+  id           String   @id @default(cuid())
+  title        String
+  slug         String   @unique
+  excerpt      String
+  content      String
+  image        String   @default("/gallery-1.jpg")
+  categoryName String
+  category     Category @relation(fields: [categoryName], references: [name], onDelete: Cascade)
+  tags         String?
+  authorId     String
+  author       User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  readingTime  String   @default("5 mins")
+  featured     Boolean  @default(false)
+  status       String   @default("Published") // Published, Draft, Scheduled, Archived
+  views        Int      @default(0)
+  seoTitle     String?
+  metaDesc     String?
+  focusKeyword String?
+  canonicalUrl String?
+  ogImage      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([authorId])
+  @@index([categoryName])
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  blogs     Blog[]
+}
+
+model Gallery {
+  id          String   @id @default(cuid())
+  title       String
+  altText     String
+  category    String
+  description String?
+  featured    Boolean  @default(false)
+  status      String   @default("Active") // Active, Draft, Archived
+  url         String
+  fileSize    String
+  seoTitle    String?
+  seoAlt      String?
+  seoCaption  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Testimonial {
+  id          String   @id @default(cuid())
+  name        String
+  avatar      String   @default("/gallery-1.jpg")
+  program     String
+  rating      Int      @default(5)
+  reviewText  String
+  status      String   @default("Pending") // Published, Pending, Rejected
+  featured    Boolean  @default(false)
+  createdDate String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model FAQ {
+  id           String   @id @default(cuid())
+  question     String
+  answer       String
+  category     String
+  displayOrder Int      @default(1)
+  status       String   @default("Published") // Published, Draft, Archived
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  status    String   @default("Active") // Active, Unsubscribed
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model WebsiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
